@@ -3,22 +3,40 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
+	"log"
 )
 
-func mainHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Главная страница")
+var storage Storage
+
+type ShortURL struct{
+	Code string
+	Original string
+	CreatedAt time.Time
+	Clicks int
 }
 
-func aboutHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "About page")
+type Storage struct{
+	URLs map[string]ShortURL
 }
 
-func contactsHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Contacts")
+func (s *Storage) Add(shortURL ShortURL) error{
+	if s.URLs == nil{
+		return fmt.Errorf("Map is not created")
+	}
+	_, ok := s.URLs[shortURL.Code]
+	if ok{
+		err := fmt.Errorf("ShortURL already exist")
+		return err
+	}else{
+		s.URLs[shortURL.Code] = shortURL
+	}
+	fmt.Println(s.URLs[shortURL.Code])
+	return nil
 }
 
-func abcHandler(w http.ResponseWriter, r *http.Request) {
-	http.NotFound(w, r)
+func mainHandler(w http.ResponseWriter, r *http.Request){
+	fmt.Fprintln(w, "Test")
 }
 
 func helloHandler(w http.ResponseWriter, r *http.Request) {
@@ -27,26 +45,31 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	name := r.URL.Query().Get("name")
-	fmt.Println(r.URL.Query())
+	// fmt.Println(r.URL.Query())
 	if name != "" {
 		fmt.Fprintf(w, "Привет, %s", name)
 	} else {
 		fmt.Fprintln(w, "Привет, гость")
 	}
+	err:= storage.Add(ShortURL{
+		Code: "2123",
+		Original: "google.com",
+		CreatedAt: time.Now(),
+		Clicks: 1,
+		}); if err != nil{
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 }
 
 func main() {
 	http.HandleFunc("/", mainHandler)
 
-	http.HandleFunc("/about", aboutHandler)
-
-	http.HandleFunc("/contacts", contactsHandler)
-
-	http.HandleFunc("/abc", abcHandler)
-
 	http.HandleFunc("/hello", helloHandler)
 
+	storage.URLs = make(map[string]ShortURL)
+
 	if err := http.ListenAndServe("localhost:8080", nil); err != nil {
-		fmt.Println("Ошибка запуска сервера")
+		log.Fatal(err)
 	}
 }
