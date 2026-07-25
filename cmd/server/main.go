@@ -48,28 +48,38 @@ func (s *Storage) Get(code string) (ShortURL, error) {
 	}
 }
 
+func (s *Storage) Update(url ShortURL) error {
+	if s.URLs == nil {
+		return fmt.Errorf("Map is not created")
+	}
+	fmt.Println(url.Clicks)
+	code := url.Code
+	s.URLs[code] = url
+	fmt.Println(url.Clicks)
+	return nil
+}
+
 func postHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Метод неподдерживается", http.StatusMethodNotAllowed)
 		return
-	} else {
-		userUrl, err := io.ReadAll(r.Body)
-		if err != nil {
-			http.Error(w, "Read URL error", http.StatusInternalServerError)
-			return
-		}
-		urlCounter++
-		shortCode := fmt.Sprintf("%sURL", strconv.Itoa(urlCounter))
-		err = storage.Add(ShortURL{
-			Code:        shortCode,
-			OriginalURL: string(userUrl),
-			CreatedAt:   time.Now(),
-			Clicks:      0,
-		})
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
+	}
+	userUrl, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Read URL error", http.StatusInternalServerError)
+		return
+	}
+	urlCounter++
+	shortCode := fmt.Sprintf("%sURL", strconv.Itoa(urlCounter))
+	err = storage.Add(ShortURL{
+		Code:        shortCode,
+		OriginalURL: string(userUrl),
+		CreatedAt:   time.Now(),
+		Clicks:      0,
+	})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 }
 
@@ -77,15 +87,20 @@ func getHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Метод неподдерживается", http.StatusMethodNotAllowed)
 		return
-	} else {
-		code := strings.TrimPrefix(r.URL.Path, "/redirect/")
-		urlToRedirect, err := storage.Get(code)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		http.Redirect(w, r, urlToRedirect.OriginalURL, http.StatusSeeOther)
 	}
+	code := strings.TrimPrefix(r.URL.Path, "/redirect/")
+	urlToRedirect, err := storage.Get(code)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	urlToRedirect.Clicks++
+	err1 := storage.Update(urlToRedirect)
+	if err1 != nil {
+		http.Error(w, "Failed to update", http.StatusBadRequest)
+		return
+	}
+	http.Redirect(w, r, urlToRedirect.OriginalURL, http.StatusSeeOther)
 }
 
 func main() {
