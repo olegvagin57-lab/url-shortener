@@ -10,12 +10,14 @@ import (
 	"time"
 )
 
-var storage Storage
-var urlCounter int = 100
+var (
+	storage    Storage
+	urlCounter int = 100
+)
 
 type ShortURL struct {
 	Code        string
-	OriginalUrl string
+	OriginalURL string
 	CreatedAt   time.Time
 	Clicks      int
 }
@@ -47,7 +49,10 @@ func (s *Storage) Get(code string) (ShortURL, error) {
 }
 
 func postHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPost {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Метод неподдерживается", http.StatusMethodNotAllowed)
+		return
+	} else {
 		userUrl, err := io.ReadAll(r.Body)
 		if err != nil {
 			http.Error(w, "Read URL error", http.StatusInternalServerError)
@@ -57,7 +62,7 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 		shortCode := fmt.Sprintf("%sURL", strconv.Itoa(urlCounter))
 		err = storage.Add(ShortURL{
 			Code:        shortCode,
-			OriginalUrl: string(userUrl),
+			OriginalURL: string(userUrl),
 			CreatedAt:   time.Now(),
 			Clicks:      0,
 		})
@@ -65,21 +70,21 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-	} else {
-		http.Error(w, "Метод неподдерживается", http.StatusMethodNotAllowed)
-		return
 	}
 }
 
 func getHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Метод неподдерживается", http.StatusMethodNotAllowed)
+		return
+	} else {
 		code := strings.TrimPrefix(r.URL.Path, "/redirect/")
 		urlToRedirect, err := storage.Get(code)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		http.Redirect(w, r, urlToRedirect.OriginalUrl, http.StatusSeeOther)
+		http.Redirect(w, r, urlToRedirect.OriginalURL, http.StatusSeeOther)
 	}
 }
 
