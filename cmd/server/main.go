@@ -8,11 +8,17 @@ import (
 )
 
 func main() {
-	storage.Stor.InitStorage()
+	storage := storage.Storage{}
 
-	http.HandleFunc("/", handlers.PostHandler)
+	storage.InitStorage()
 
-	http.HandleFunc("/redirect/", handlers.GetHandler)
+	handler := handlers.Handler{
+		Storage: &storage,
+	}
+
+	http.HandleFunc("/", handler.PostHandler)
+
+	http.HandleFunc("/redirect/", handler.GetHandler)
 
 	if err := http.ListenAndServe("localhost:8080", nil); err != nil {
 		log.Fatal(err)

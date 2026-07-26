@@ -10,7 +10,7 @@ import (
 	"url-shortener/internal/storage"
 )
 
-func PostHandler(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) PostHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Метод неподдерживается", http.StatusMethodNotAllowed)
 		return
@@ -22,7 +22,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	storage.URLCounter++
 	shortCode := fmt.Sprintf("%sURL", strconv.Itoa(storage.URLCounter))
-	err = storage.Stor.Add(models.ShortURL{
+	err = h.Storage.Add(models.ShortURL{
 		Code:        shortCode,
 		OriginalURL: string(userUrl),
 		CreatedAt:   time.Now(),
