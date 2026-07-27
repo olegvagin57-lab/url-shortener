@@ -22,7 +22,7 @@ func (h *Handler) PostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	storage.URLCounter++
 	shortCode := fmt.Sprintf("%sURL", strconv.Itoa(storage.URLCounter))
-	err = h.Storage.Add(models.ShortURL{
+	err = h.storage.Add(models.ShortURL{
 		Code:        shortCode,
 		OriginalURL: string(userUrl),
 		CreatedAt:   time.Now(),

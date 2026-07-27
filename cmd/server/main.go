@@ -12,9 +12,7 @@ func main() {
 
 	storage.InitStorage()
 
-	handler := handlers.Handler{
-		Storage: &storage,
-	}
+	handler := handlers.NewHandler(&storage)
 
 	http.HandleFunc("/", handler.PostHandler)
 

@@ -3,5 +3,11 @@ package handlers
 import "url-shortener/internal/storage"
 
 type Handler struct {
-	Storage *storage.Storage
+	storage *storage.Storage
+}
+
+func NewHandler(storage *storage.Storage) *Handler {
+	return &Handler{
+		storage: storage,
+	}
 }
