@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"url-shortener/internal/handlers"
+	"url-shortener/internal/service"
 	"url-shortener/internal/storage"
 )
 
@@ -12,7 +13,9 @@ func main() {
 
 	storage.InitStorage()
 
-	handler := handlers.NewHandler(&storage)
+	svc := service.NewService(&storage)
+
+	handler := handlers.NewHandler(svc)
 
 	http.HandleFunc("/", handler.PostHandler)
 

@@ -4,10 +4,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strconv"
-	"time"
-	"url-shortener/internal/models"
-	"url-shortener/internal/storage"
 )
 
 func (h *Handler) PostHandler(w http.ResponseWriter, r *http.Request) {
@@ -20,16 +16,10 @@ func (h *Handler) PostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Read URL error", http.StatusInternalServerError)
 		return
 	}
-	storage.URLCounter++
-	shortCode := fmt.Sprintf("%sURL", strconv.Itoa(storage.URLCounter))
-	err = h.storage.Add(models.ShortURL{
-		Code:        shortCode,
-		OriginalURL: string(userUrl),
-		CreatedAt:   time.Now(),
-		Clicks:      0,
-	})
+	shortURL, err := h.service.CreateShortURL(string(userUrl))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	fmt.Fprintln(w, shortURL)
 }

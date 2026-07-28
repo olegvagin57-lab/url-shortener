@@ -9,11 +9,6 @@ type Storage struct {
 	URLs map[string]models.ShortURL
 }
 
-var (
-	Stor       Storage
-	URLCounter int = 100
-)
-
 func (s *Storage) InitStorage() {
 	s.URLs = make(map[string]models.ShortURL)
 }
@@ -27,7 +22,6 @@ func (s *Storage) Add(shortURL models.ShortURL) error {
 		return fmt.Errorf("ShortURL already exist")
 	}
 	s.URLs[shortURL.Code] = shortURL
-	fmt.Println(s.URLs[shortURL.Code])
 	return nil
 }
 
