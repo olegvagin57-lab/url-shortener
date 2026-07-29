@@ -16,11 +16,5 @@ func (h *Handler) GetHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	// urlToRedirect.Clicks++
-	// err1 := h.storage.Update(urlToRedirect)
-	// if err1 != nil {
-	// 	http.Error(w, "Failed to update", http.StatusBadRequest)
-	// 	return
-	// }
 	http.Redirect(w, r, urlToRedirect.OriginalURL, http.StatusSeeOther)
 }

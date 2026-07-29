@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"time"
 	"url-shortener/internal/generator"
 	"url-shortener/internal/models"
@@ -15,7 +16,7 @@ type Service struct {
 func NewService(storage *storage.Storage) *Service {
 	return &Service{
 		storage: storage,
-		nextID:  1,
+		nextID:  100,
 	}
 }
 
@@ -39,5 +40,19 @@ func (s *Service) RedirectToURL(code string) (models.ShortURL, error) {
 	if err != nil {
 		return models.ShortURL{}, err
 	}
+	err = s.updateCliks(urlToRedirect)
+	if err != nil {
+		return models.ShortURL{}, err
+	}
+	fmt.Println(urlToRedirect)
 	return urlToRedirect, nil
+}
+
+func (s *Service) updateCliks(url models.ShortURL) error {
+	url.Clicks++
+	err := s.storage.Update(url)
+	if err != nil {
+		return err
+	}
+	return nil
 }
