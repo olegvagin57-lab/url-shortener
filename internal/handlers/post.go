@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -21,5 +22,12 @@ func (h *Handler) PostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	fmt.Fprintln(w, shortURL)
+	codeURL := "http://localhost:8080/" + shortURL.Code
+	urlResponse := CreateShortURLResponse(shortURL, codeURL)
+	jsonURLResponse, err := json.Marshal(urlResponse)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	fmt.Fprintln(w, string(jsonURLResponse))
 }

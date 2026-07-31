@@ -1,6 +1,7 @@
 package generator
 
 import (
+	"slices"
 	"strings"
 )
 
@@ -14,7 +15,13 @@ func GenerateCode(id int) string {
 		id = id / 62
 	}
 
-	result := finalStr.String()
+	result := reverce(finalStr.String())
 
 	return result
+}
+
+func reverce(s string) string {
+	str := []rune(s)
+	slices.Reverse(str)
+	return string(str)
 }
