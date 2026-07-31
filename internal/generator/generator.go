@@ -15,12 +15,12 @@ func GenerateCode(id int) string {
 		id = id / 62
 	}
 
-	result := reverce(finalStr.String())
+	result := reverse(finalStr.String())
 
 	return result
 }
 
-func reverce(s string) string {
+func reverse(s string) string {
 	str := []rune(s)
 	slices.Reverse(str)
 	return string(str)
