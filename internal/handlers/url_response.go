@@ -7,6 +7,10 @@ type ShortURLResponse struct {
 	ShortURL string `json:"short_url"`
 }
 
+type UserOriginalURL struct {
+	URL string `json:"url"`
+}
+
 func CreateShortURLResponse(shortURL models.ShortURL, codeURL string) ShortURLResponse {
 	urlResponce := ShortURLResponse{
 		Code:     shortURL.Code,
