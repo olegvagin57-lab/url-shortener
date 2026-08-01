@@ -11,10 +11,10 @@ type UserOriginalURL struct {
 	URL string `json:"url"`
 }
 
-func CreateShortURLResponse(shortURL models.ShortURL, codeURL string) ShortURLResponse {
-	urlResponce := ShortURLResponse{
+func NewShortURLResponse(shortURL models.ShortURL) ShortURLResponse {
+	urlResponse := ShortURLResponse{
 		Code:     shortURL.Code,
-		ShortURL: codeURL,
+		ShortURL: "http://localhost:8080/redirect/" + shortURL.Code,
 	}
-	return urlResponce
+	return urlResponse
 }

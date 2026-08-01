@@ -20,9 +20,8 @@ func (h *Handler) PostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	codeURL := "http://localhost:8080/" + shortURL.Code
-	urlResponse := CreateShortURLResponse(shortURL, codeURL)
-	w.Header().Set("Content-type", "application/json")
+	urlResponse := NewShortURLResponse(shortURL)
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	err = json.NewEncoder(w).Encode(urlResponse)
 	if err != nil {
