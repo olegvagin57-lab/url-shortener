@@ -5,15 +5,15 @@ import (
 	"url-shortener/internal/models"
 )
 
-type Storage struct {
+type MemoryStorage struct {
 	URLs map[string]models.ShortURL
 }
 
-func (s *Storage) InitStorage() {
+func (s *MemoryStorage) InitStorage() {
 	s.URLs = make(map[string]models.ShortURL)
 }
 
-func (s *Storage) Add(shortURL models.ShortURL) error {
+func (s *MemoryStorage) Add(shortURL models.ShortURL) error {
 	if s.URLs == nil {
 		return fmt.Errorf("Map is not created")
 	}
@@ -25,7 +25,7 @@ func (s *Storage) Add(shortURL models.ShortURL) error {
 	return nil
 }
 
-func (s *Storage) Get(code string) (models.ShortURL, error) {
+func (s *MemoryStorage) Get(code string) (models.ShortURL, error) {
 	url, ok := s.URLs[code]
 	if ok {
 		return url, nil
@@ -34,7 +34,7 @@ func (s *Storage) Get(code string) (models.ShortURL, error) {
 	}
 }
 
-func (s *Storage) Update(url models.ShortURL) error {
+func (s *MemoryStorage) Update(url models.ShortURL) error {
 	if s.URLs == nil {
 		return fmt.Errorf("Map is not created")
 	}

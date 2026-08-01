@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	storage := storage.Storage{}
+	storage := storage.MemoryStorage{}
 
 	storage.InitStorage()
 

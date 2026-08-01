@@ -7,15 +7,14 @@ import (
 	"time"
 	"url-shortener/internal/generator"
 	"url-shortener/internal/models"
-	"url-shortener/internal/storage"
 )
 
 type Service struct {
-	storage *storage.Storage
+	storage Storage
 	nextID  int
 }
 
-func NewService(storage *storage.Storage) *Service {
+func NewService(storage Storage) *Service {
 	return &Service{
 		storage: storage,
 		nextID:  100,
@@ -67,7 +66,7 @@ func (s *Service) updateCliсks(url models.ShortURL) error {
 func (s *Service) validateURL(originalURL string) error {
 	u, err := url.ParseRequestURI(originalURL)
 	if err != nil || u.Scheme == "" || u.Host == "" {
-		return fmt.Errorf("Invalid URL")
+		return fmt.Errorf("invalid URL")
 	}
 	return nil
 }
