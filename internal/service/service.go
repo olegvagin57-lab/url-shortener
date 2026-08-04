@@ -10,14 +10,14 @@ import (
 )
 
 type Service struct {
-	storage Storage
-	nextID  int
+	storage   Storage
+	generator *generator.Generator
 }
 
-func NewService(storage Storage) *Service {
+func NewService(storage Storage, generator *generator.Generator) *Service {
 	return &Service{
-		storage: storage,
-		nextID:  100,
+		storage:   storage,
+		generator: generator,
 	}
 }
 
@@ -28,12 +28,11 @@ func (s *Service) CreateShortURL(originalURL string) (models.ShortURL, error) {
 		return models.ShortURL{}, err
 	}
 	shortURL := models.ShortURL{
-		Code:        generator.GenerateCode(s.nextID),
+		Code:        s.generator.GenerateCode(),
 		OriginalURL: string(originalURL),
 		CreatedAt:   time.Now(),
 		Clicks:      0,
 	}
-	s.nextID++
 	err = s.storage.Add(shortURL)
 	if err != nil {
 		return models.ShortURL{}, err

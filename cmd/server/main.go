@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"url-shortener/internal/generator"
 	"url-shortener/internal/handlers"
 	"url-shortener/internal/service"
 	"url-shortener/internal/storage"
@@ -13,7 +14,9 @@ func main() {
 
 	storage.InitStorage()
 
-	svc := service.NewService(&storage)
+	gen := generator.NewGenerator()
+
+	svc := service.NewService(&storage, gen)
 
 	handler := handlers.NewHandler(svc)
 
