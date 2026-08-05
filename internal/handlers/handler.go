@@ -1,14 +1,10 @@
 package handlers
 
-import (
-	"url-shortener/internal/service"
-)
-
 type Handler struct {
-	service *service.Service
+	service ServiceInterface
 }
 
-func NewHandler(service *service.Service) *Handler {
+func NewHandler(service ServiceInterface) *Handler {
 	return &Handler{
 		service: service,
 	}
